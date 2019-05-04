@@ -60,6 +60,55 @@ public class VideoRecorder
         m_preview = preview;
     }
 
+    //endregion
+
+    //region public methods
+
+    /**
+     * Starts/Stops recording of video from the phones main camera
+     */
+    public void toggleRecording()
+    {
+        if (isRecording) {
+            // stop recording and release camera
+            mediaRecorder.stop();  // stop the recording
+            releaseMediaRecorder(); // release the MediaRecorder object
+            m_camera.lock();         // take camera access back from MediaRecorder
+
+            // inform the user that recording has stopped
+            isRecording = false;
+        } else {
+            // initialize video camera
+            File encounterFolder = FileUtility.createEncounterFolder(FileUtility.GetEncounterHomeDir());
+            boolean videoStartedUpSuccessfully = prepareVideoRecorder(encounterFolder);
+            if (videoStartedUpSuccessfully) {
+                // Camera is available and unlocked, MediaRecorder is prepared,
+                // now you can start recording
+                mediaRecorder.start();
+
+                // inform the user that recording has started
+                isRecording = true;
+            } else {
+                // prepare didn't work, release the camera
+                releaseMediaRecorder();
+                // inform user
+                Log.d(TAG, "failed to start Media Recorder");
+            }
+        }
+    }
+
+    /**
+     * Stops and frees all recording objects
+     * Required on pause of an application otherwise bad things happen
+     */
+    public void closeRecording()
+    {
+        releaseMediaRecorder();       // if you are using MediaRecorder, release it first
+        releaseCamera();              // release the camera immediately on pause event
+    }
+    //endregion
+
+    //region private methods
     /**
      * Handles locking the camera, configuring and preparing the media recorder instance
      * @param outputFolder The parent folder that the video file will live in
@@ -104,39 +153,6 @@ public class VideoRecorder
         return true;
     }
 
-    /**
-     * Starts/Stops recording of video from the phones main camera
-     */
-    public void toggleRecording()
-    {
-        if (isRecording) {
-            // stop recording and release camera
-            mediaRecorder.stop();  // stop the recording
-            releaseMediaRecorder(); // release the MediaRecorder object
-            m_camera.lock();         // take camera access back from MediaRecorder
-
-            // inform the user that recording has stopped
-            isRecording = false;
-        } else {
-            // initialize video camera
-            File encounterFolder = FileUtility.createEncounterFolder(FileUtility.GetEncounterHomeDir());
-            boolean videoStartedUpSuccessfully = prepareVideoRecorder(encounterFolder);
-            if (videoStartedUpSuccessfully) {
-                // Camera is available and unlocked, MediaRecorder is prepared,
-                // now you can start recording
-                mediaRecorder.start();
-
-                // inform the user that recording has started
-                isRecording = true;
-            } else {
-                // prepare didn't work, release the camera
-                releaseMediaRecorder();
-                // inform user
-                Log.d(TAG, "failed to start Media Recorder");
-            }
-        }
-    }
-
     private void releaseMediaRecorder(){
         if (mediaRecorder != null) {
             mediaRecorder.reset();   // clear recorder configuration
@@ -144,12 +160,6 @@ public class VideoRecorder
             mediaRecorder = null;
             m_camera.lock();           // lock camera for later use
         }
-    }
-
-    public void closeRecording()
-    {
-        releaseMediaRecorder();       // if you are using MediaRecorder, release it first
-        releaseCamera();              // release the camera immediately on pause event
     }
 
     /** Create a file Uri for saving an image or video */
