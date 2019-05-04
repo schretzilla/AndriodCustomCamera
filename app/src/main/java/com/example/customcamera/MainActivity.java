@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         // Create the birdwatch video directory if it does not exist
         if (! encounterHomeDir.exists()){
             if (! encounterHomeDir.mkdirs()){
-                Log.d(TAG, "failed to create directory");
+                Log.d(TAG, "failed to create directory: " + encounterHomeDir.getName());
             }
         }
 
@@ -132,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
         catch (Exception ex)
         {
             ex.printStackTrace();
+            Log.d(TAG, "getCameraInstance: " + ex.getMessage());
         }
         return c;
     }
@@ -275,6 +276,7 @@ public class MainActivity extends AppCompatActivity {
             mediaFile = new File(parentFolder + File.separator +
                     "FeedingVideo" + ".mp4");
         } else {
+            Log.d(TAG, "getOutputMediaFile: Invalid Media Type provided.");
             return null;
         }
 
