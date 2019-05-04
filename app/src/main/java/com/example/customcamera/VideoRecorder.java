@@ -19,17 +19,6 @@ public class VideoRecorder
      */
     private boolean isRecording = false;
 
-
-    /**
-     * Image Media type
-     */
-    private static final int MEDIA_TYPE_IMAGE = 1;
-
-    /**
-     * Video media type
-     */
-    private static final int MEDIA_TYPE_VIDEO = 2;
-
     /**
      * Used to handle recording audio and video as well as storing the preferences to use with the
      * audio and video
@@ -94,7 +83,7 @@ public class VideoRecorder
         mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
 
         // Step 4: Set output file
-        String outputFile = getOutputMediaFile(outputFolder, MEDIA_TYPE_VIDEO).toString();
+        String outputFile = FileUtility.getOutputMediaFile(outputFolder, FileUtility.MEDIA_TYPE_VIDEO).toString();
         mediaRecorder.setOutputFile(outputFile);
 
         // Step 5: Set the preview output
@@ -166,27 +155,7 @@ public class VideoRecorder
     /** Create a file Uri for saving an image or video */
     //TODO: Figure out if we need this URI
     private static Uri getOutputMediaFileUri(File parentDirectory, int type){
-        return Uri.fromFile(getOutputMediaFile(parentDirectory, type));
-    }
-
-    //todo: move to File utility
-    /** Create a File for saving an image or video */
-    private static File getOutputMediaFile(File parentFolder, int type)
-    {
-        // Create a media file name
-        File mediaFile;
-        if (type == MEDIA_TYPE_IMAGE){
-            mediaFile = new File(parentFolder + File.separator +
-                    "FeedingPhoto" + ".jpg");
-        } else if(type == MEDIA_TYPE_VIDEO) {
-            mediaFile = new File(parentFolder + File.separator +
-                    "FeedingVideo" + ".mp4");
-        } else {
-            Log.d(TAG, "getOutputMediaFile: Invalid Media Type provided.");
-            return null;
-        }
-
-        return mediaFile;
+        return Uri.fromFile(FileUtility.getOutputMediaFile(parentDirectory, type));
     }
 
     private void releaseCamera() {

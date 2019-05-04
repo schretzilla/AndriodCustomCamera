@@ -1,6 +1,7 @@
 package com.example.customcamera;
 
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,11 +14,30 @@ import java.util.Date;
  */
 public class FileUtility
 {
+    //region public constants
+    /**
+     * Image Media type
+     */
+    public static final int MEDIA_TYPE_IMAGE = 1;
+
+    /**
+     * Video media type
+     */
+    public static final int MEDIA_TYPE_VIDEO = 2;
+
     /**
      * Home directory for all Encounter Data
      */
     private static File encounterHomeDir = new File(Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_DOWNLOADS), "EncounterData");
+
+    //endregion
+
+    /**
+     * Tag used for debugging output
+     */
+    private static final String TAG = "FileUtility";
+
 
     public static File GetEncounterHomeDir()
     {
@@ -70,5 +90,24 @@ public class FileUtility
         encounterFolder.mkdir();
 
         return encounterFolder;
+    }
+
+    /** Create a File for saving an image or video */
+    public static File getOutputMediaFile(File parentFolder, int type)
+    {
+        // Create a media file name
+        File mediaFile;
+        if (type == MEDIA_TYPE_IMAGE){
+            mediaFile = new File(parentFolder + File.separator +
+                    "FeedingPhoto" + ".jpg");
+        } else if(type == MEDIA_TYPE_VIDEO) {
+            mediaFile = new File(parentFolder + File.separator +
+                    "FeedingVideo" + ".mp4");
+        } else {
+            Log.d(TAG, "getOutputMediaFile: Invalid Media Type provided.");
+            return null;
+        }
+
+        return mediaFile;
     }
 }
