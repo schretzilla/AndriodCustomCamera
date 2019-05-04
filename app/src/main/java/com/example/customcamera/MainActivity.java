@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
     //endregion
 
-    //region View Methods
+    //region Activity Lifecycle Methods
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,21 +87,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    //Camera Callbacks
-    Camera.PictureCallback mPictureCallback = new Camera.PictureCallback() {
-        @Override
-        public void onPictureTaken(byte[] data, Camera camera)
-        {
-            File newParentDir = createEncounterFolder(encounterHomeDir);
-
-            // TODO: Handle all data but for now just write the bird photo
-            writeFile(data, newParentDir, "BirdPhoto.jpg");
-
-            //TODO: Remove when view is removed
-            camera.startPreview();
-
-        }
-    };
 
     //endregion
 
@@ -113,10 +98,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void captureImage(View v)
     {
-        if(camera != null)
-        {
-            camera.takePicture(null, null, mPictureCallback);
-        }
+        takePhoto();
     }
 
     /**
@@ -141,6 +123,39 @@ public class MainActivity extends AppCompatActivity {
        Button recordButton = (Button) findViewById(R.id.recordVideo);
        recordButton.setText(text);
     }
+
+    //endregion
+
+    //region photo specific events
+
+    /**
+     * Trigger the global camera to take a photo
+     */
+    private void takePhoto()
+    {
+        if(camera != null)
+        {
+            camera.takePicture(null, null, mPictureCallback);
+        }
+    }
+
+    /**
+     * Camera Callbacks for when a photo is taken
+     */
+    Camera.PictureCallback mPictureCallback = new Camera.PictureCallback() {
+        @Override
+        public void onPictureTaken(byte[] data, Camera camera)
+        {
+            File newParentDir = createEncounterFolder(encounterHomeDir);
+
+            // TODO: Handle all data but for now just write the bird photo
+            writeFile(data, newParentDir, "BirdPhoto.jpg");
+
+            //TODO: Remove when view is removed
+            camera.startPreview();
+
+        }
+    };
 
     //endregion
 
