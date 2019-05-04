@@ -3,4 +3,5 @@
     <string name="captureBtnTxt">Capture</string>
     <string name="custom_camera">Custom Camera</string>
     <string name="gallary">Gallary</string>
+    <string name="record_video">Record Video</string>
 </resources>
