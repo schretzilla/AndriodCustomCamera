@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">CustomCamera</string>
+    <string name="captureBtnTxt">Capture</string>
+    <string name="custom_camera">Custom Camera</string>
+    <string name="gallary">Gallary</string>
+</resources>
