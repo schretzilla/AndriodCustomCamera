@@ -1,19 +1,27 @@
 package com.example.customcamera;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
 
@@ -50,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         frameLayout = findViewById(R.id.frameLayout);
-
+        requestPermissions();
         //open and start camera
         m_camera = getCameraInstance();
 
@@ -129,6 +137,93 @@ public class MainActivity extends AppCompatActivity {
             setCaptureButtonText("Record Video");
         }
     }
+
+    //endregion
+
+    //region private methods
+
+    /**
+     * Request permissions to required hardware
+     */
+    private void requestPermissions()
+    {
+        HashMap<String, Integer> reqMap = new HashMap<>();
+        reqMap.put(Manifest.permission.CAMERA, 1);
+        reqMap.put(Manifest.permission.RECORD_AUDIO, 2);
+        reqMap.put(Manifest.permission.WRITE_EXTERNAL_STORAGE, 3);
+
+        for (String requirement : reqMap.keySet())
+        {
+            if (ContextCompat.checkSelfPermission(this,
+                    requirement) != PackageManager.PERMISSION_GRANTED) {
+
+                // No explanation needed; request the permission
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{requirement},
+                        reqMap.get(requirement));
+
+
+            }
+
+        }
+
+    }
+
+    /**
+     * Callback when permissions have been accepted or denied
+     * @param requestCode The request code for the permissions that was requested
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        boolean requestGranted = true;
+        String requestName = "";
+        switch (requestCode) {
+            case 1:
+            {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+
+                    requestGranted = false;
+                    requestName = "Camera";
+                }
+
+            }
+            case 2:
+            {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+
+                    requestGranted = false;
+                    requestName = "Record Audio";
+                }
+            }
+            case 3:
+            {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+
+                    requestGranted = false;
+                    requestName = "Write to External Storage";
+                }
+
+
+            }
+        }
+
+        if(!requestGranted)
+        {
+            Toast.makeText(MainActivity.this, "Permission: " + requestName + " denied!", Toast.LENGTH_SHORT).show();
+
+        }
+
+    }
+
 
     //endregion
 
