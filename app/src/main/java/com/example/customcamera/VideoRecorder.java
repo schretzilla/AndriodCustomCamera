@@ -173,7 +173,7 @@ public class VideoRecorder
             m_camera.release();        // release the camera for other applications
             //m_camera.stopPreview();
 
-            //camera = null; //TODO Do we need to set camera to null?
+            m_camera = null;
         }
     }
 
