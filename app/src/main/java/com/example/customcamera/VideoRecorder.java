@@ -5,6 +5,7 @@ import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.util.Log;
+import android.view.SurfaceView;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +45,11 @@ public class VideoRecorder
      * Camera instance
      */
     Camera m_camera;
+
+    /**
+     * preview is required for any video recording. can be 1x1px surface as workaround.
+     */
+    SurfaceView m_preview;
     //endregion
 
     //region getters/setters
@@ -60,12 +66,17 @@ public class VideoRecorder
 
     //region public methods
 
+    public VideoRecorder(SurfaceView preview)
+    {
+        m_preview = preview;
+    }
+
     /**
      * Handles locking the camera, configuring and preparing the media recorder instance
      * @param outputFolder The parent folder that the video file will live in
      * @return bool representing the state of success of preparing the video recorder
      */
-    private boolean prepareVideoRecorder(File outputFolder, ShowCamera cameraPreview){
+    private boolean prepareVideoRecorder(File outputFolder){
 
         m_camera = getCameraInstance();
 
@@ -86,9 +97,8 @@ public class VideoRecorder
         String outputFile = getOutputMediaFile(outputFolder, MEDIA_TYPE_VIDEO).toString();
         mediaRecorder.setOutputFile(outputFile);
 
-        //TODO: Remove view
         // Step 5: Set the preview output
-        mediaRecorder.setPreviewDisplay(cameraPreview.getHolder().getSurface());
+        mediaRecorder.setPreviewDisplay(m_preview.getHolder().getSurface());
 
         // Step 6: Prepare configured MediaRecorder
         try {
@@ -108,7 +118,7 @@ public class VideoRecorder
     /**
      * Starts/Stops recording of video from the phones main camera
      */
-    public void toggleRecording(ShowCamera cameraPreview)
+    public void toggleRecording()
     {
         if (isRecording) {
             // stop recording and release camera
@@ -121,7 +131,7 @@ public class VideoRecorder
         } else {
             // initialize video camera
             File encounterFolder = FileUtility.createEncounterFolder(FileUtility.GetEncounterHomeDir());
-            boolean videoStartedUpSuccessfully = prepareVideoRecorder(encounterFolder, cameraPreview);
+            boolean videoStartedUpSuccessfully = prepareVideoRecorder(encounterFolder);
             if (videoStartedUpSuccessfully) {
                 // Camera is available and unlocked, MediaRecorder is prepared,
                 // now you can start recording
@@ -182,6 +192,7 @@ public class VideoRecorder
     private void releaseCamera() {
         if (m_camera != null) {
             m_camera.release();        // release the camera for other applications
+            //m_camera.stopPreview();
 
             //camera = null; //TODO Do we need to set camera to null?
         }

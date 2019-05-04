@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private static final String TAG = "Main Activity";
 
-    private VideoRecorder videoRecorder = new VideoRecorder();
+    private VideoRecorder videoRecorder;
 
     //TODO: Can we get this out?
     Camera m_camera;
@@ -58,8 +58,16 @@ public class MainActivity extends AppCompatActivity {
 
         //show camera view
         cameraPreview = new ShowCamera(this, m_camera);
-
         frameLayout.addView(cameraPreview);
+        videoRecorder = new VideoRecorder(cameraPreview);
+
+        //Add an empty preview to a layout otherwise media will throw errors when video is recorded
+        //TODO: Switchout for fake preview in prodcution
+        //FrameLayout videoLayout =  findViewById(R.id.videoLayout);
+        //EmptyPreview fakeVideoSurface = new EmptyPreview(this);
+        // videoLayout.addView(fakeVideoSurface);
+
+
 
         //TODO: check that storage is mounted if we use external storage
 //        String state = Environment.getExternalStorageState();
@@ -112,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void captureVideo(View v)
     {
-        videoRecorder.toggleRecording(cameraPreview);
+        videoRecorder.toggleRecording();
 
         if(videoRecorder.isRecording())
         {
