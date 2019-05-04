@@ -52,6 +52,12 @@ public class MainActivity extends AppCompatActivity {
         frameLayout.addView(cameraPreview);
 
         //TODO: check that storage is mounted if we use external storage
+//        String state = Environment.getExternalStorageState();
+//        if(!state.equals(Environment.MEDIA_MOUNTED))
+//        {
+        //    log some error
+//            return null;
+//        }
 
         // Create the birdwatch video directory if it does not exist
         if (! encounterHomeDir.exists()){
@@ -67,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onPictureTaken(byte[] data, Camera camera)
         {
-            File newParentDir = getUniqeOutputDir();
+            File newParentDir = createEncounterFolder(encounterHomeDir);
 
             // TODO: Handle all data but for now just write the bird photo
             writeFile(data, newParentDir, "BirdPhoto.jpg");
@@ -77,26 +83,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
-
-    // Creates a new unique directory using timestamps and UUID's to store bird data in
-    private File getUniqeOutputDir()
-    {
-        String state = Environment.getExternalStorageState();
-        if(!state.equals(Environment.MEDIA_MOUNTED))
-        {
-            return null;
-        }
-        else
-        {
-            //TODO: Replace uuid, possibly reuse other code by passing type
-            //create File with timestamp
-            String dateString = DateFormat.getDateTimeInstance().format(new Date());
-            File newBirdDirectory = new File(encounterHomeDir, dateString + "-" + UUID.randomUUID().toString());
-
-            newBirdDirectory.mkdir();
-            return newBirdDirectory;
-        }
-    }
 
     //Write the supplied data to the directory to the file name
     private void writeFile(byte[] data, File directory, String fileName)
@@ -283,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
         return mediaFile;
     }
 
-    // Creates a new unique directory using timestamps and UUID's to store bird data in
+    // Creates a new unique directory in the provided home directory using timestamps
     private File createEncounterFolder(File homeDir)
     {
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HHmmss").format(new Date());
