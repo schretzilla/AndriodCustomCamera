@@ -15,17 +15,20 @@ import android.widget.FrameLayout;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.UUID;
 
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
 
 public class MainActivity extends AppCompatActivity {
 
+    //region private members
     Camera camera;
+
+    //The Layout frame that displays the camera's view
     FrameLayout frameLayout;
+
+    //The Camera Preview
     ShowCamera cameraPreview;
 
     //Log tag name
@@ -37,6 +40,22 @@ public class MainActivity extends AppCompatActivity {
     //Home directory for all Encounter Data
     private static File encounterHomeDir = new File(Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_DOWNLOADS), "EncounterData");
+
+    //Image Media type
+    private static final int MEDIA_TYPE_IMAGE = 1;
+
+    //Video media type
+    private static final int MEDIA_TYPE_VIDEO = 2;
+
+    /**
+     * Used to handle recording audio and video as well as storing the preferences to use with the
+     * audio and video
+     */
+    MediaRecorder mediaRecorder;
+
+    //endregion
+
+    //region View Methods
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,46 +103,14 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    //Write the supplied data to the directory to the file name
-    private void writeFile(byte[] data, File directory, String fileName)
-    {
+    //endregion
 
-        if(directory == null || fileName == null)
-        {
-            return;
-        }
-        else
-        {
-            try
-            {
-                //write data
-                File dataFile = new File(directory, fileName);
-                FileOutputStream fos = new FileOutputStream(dataFile);
-                fos.write(data);
-                fos.close();
+    //region Events
 
-            } catch(IOException ex)
-            {
-                ex.printStackTrace();
-            }
-        }
-    }
-
-    //Opens the camera
-    public static Camera getCameraInstance() {
-        Camera c = null;
-        try{
-            c = Camera.open();
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-            Log.d(TAG, "getCameraInstance: " + ex.getMessage());
-        }
-        return c;
-    }
-
-    // Event for camera photo captured
+    /**
+     * Event for handling camera photo button pushes
+     * @param v The current view that calls this method
+     */
     public void captureImage(View v)
     {
         if(camera != null)
@@ -132,7 +119,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Event for capturing video
+    /**
+     * Event for handling capturing video button pushes
+     * @param v The current view
+     */
     public void captureVideo(View v)
     {
         if (isRecording) {
@@ -165,15 +155,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //endregion
+
+    //region Gui Specific Methods
+
+    /**
+     * Change the record Video button's text
+     * @param text The text to change it to
+     */
     private void setCaptureButtonText(String text)
     {
        Button recordButton = (Button) findViewById(R.id.recordVideo);
        recordButton.setText(text);
     }
 
-    MediaRecorder mediaRecorder;
+    //endregion
 
-    //Handles locking the camera, configuring and preparing the media recorder instance
+    //region video camera methods
+
+    /**
+     * Handles locking the camera, configuring and preparing the media recorder instance
+     * @param outputFolder The parent folder that the video file will live in
+     * @return bool representing the state of success of preparing the video recorder
+     */
     private boolean prepareVideoRecorder(File outputFolder){
 
         camera = getCameraInstance();
@@ -212,9 +216,6 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-
-    //Releasing video camera methods
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -241,8 +242,6 @@ public class MainActivity extends AppCompatActivity {
 
     //Methods for Saving video from Camera
 
-    public static final int MEDIA_TYPE_IMAGE = 1;
-    public static final int MEDIA_TYPE_VIDEO = 2;
 
     /** Create a file Uri for saving an image or video */
     //TODO: Figure out if we need this URI
@@ -269,7 +268,64 @@ public class MainActivity extends AppCompatActivity {
         return mediaFile;
     }
 
-    // Creates a new unique directory in the provided home directory using timestamps
+    //endregion
+
+    //region Utility Methods
+
+    //Opens the camera
+    private static Camera getCameraInstance() {
+        Camera c = null;
+        try{
+            c = Camera.open();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            Log.d(TAG, "getCameraInstance: " + ex.getMessage());
+        }
+        return c;
+    }
+
+    //
+
+    /**
+     * Write the supplied data to the directory to the file name
+     * <p>
+     *     Note: Not used for writing videos. MediaRecorder handles that.
+     * </p>
+     * @param data The byte array of data to write
+     * @param directory The parent directory to write this new data file in
+     * @param fileName The name to use when saving the data to a file.
+     */
+    private void writeFile(byte[] data, File directory, String fileName)
+    {
+
+        if(directory == null || fileName == null)
+        {
+            return;
+        }
+        else
+        {
+            try
+            {
+                //write data
+                File dataFile = new File(directory, fileName);
+                FileOutputStream fos = new FileOutputStream(dataFile);
+                fos.write(data);
+                fos.close();
+
+            } catch(IOException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Creates a new unique directory in the provided home directory using timestamps
+     * @param homeDir The parent directory to create this encounter in
+     * @return The newly created uniquely named directory using the timestamp as the unique identifier
+     */
     private File createEncounterFolder(File homeDir)
     {
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HHmmss").format(new Date());
@@ -279,4 +335,6 @@ public class MainActivity extends AppCompatActivity {
 
         return encounterFolder;
     }
+
+    //endregion
 }
