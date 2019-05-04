@@ -1,5 +1,7 @@
 package com.example.customcamera;
 
+import android.os.Environment;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,6 +13,17 @@ import java.util.Date;
  */
 public class FileUtility
 {
+    /**
+     * Home directory for all Encounter Data
+     */
+    private static File encounterHomeDir = new File(Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_DOWNLOADS), "EncounterData");
+
+    public static File GetEncounterHomeDir()
+    {
+        return encounterHomeDir;
+    }
+
     /**
      * Write the supplied data to the directory to the file name
      * <p>
