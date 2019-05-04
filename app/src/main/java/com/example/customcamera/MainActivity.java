@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
             camera.lock();         // take camera access back from MediaRecorder
 
             // inform the user that recording has stopped
-            setCaptureButtonText("Capture");
+            setCaptureButtonText("Record Video");
             isRecording = false;
         } else {
             // initialize video camera
