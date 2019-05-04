@@ -103,6 +103,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * What to do when the application is paused
+     * <p>
+     *     Need to make sure that the video is exited when the application is paused
+     * </p>
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        releaseMediaRecorder();       // if you are using MediaRecorder, release it first
+        releaseCamera();              // release the camera immediately on pause event
+    }
+
 
     //endregion
 
@@ -253,13 +266,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "failed to start Media Recorder");
             }
         }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        releaseMediaRecorder();       // if you are using MediaRecorder, release it first
-        releaseCamera();              // release the camera immediately on pause event
     }
 
     private void releaseMediaRecorder(){
