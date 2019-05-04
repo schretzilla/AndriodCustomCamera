@@ -43,6 +43,7 @@ public class VideoRecorder
     /**
      * Camera instance
      */
+    Camera m_camera;
     //endregion
 
     //region getters/setters
@@ -64,15 +65,15 @@ public class VideoRecorder
      * @param outputFolder The parent folder that the video file will live in
      * @return bool representing the state of success of preparing the video recorder
      */
-    private boolean prepareVideoRecorder(File outputFolder, Camera camera){
+    private boolean prepareVideoRecorder(File outputFolder, ShowCamera cameraPreview){
 
-        //camera = getCameraInstance();
+        m_camera = getCameraInstance();
 
         mediaRecorder = new MediaRecorder();
 
         // Step 1: Unlock and set camera to MediaRecorder
-        camera.unlock();
-        mediaRecorder.setCamera(camera);
+        m_camera.unlock();
+        mediaRecorder.setCamera(m_camera);
 
         // Step 2: Set sources
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
@@ -87,18 +88,18 @@ public class VideoRecorder
 
         //TODO: Remove view
         // Step 5: Set the preview output
-       // mediaRecorder.setPreviewDisplay(cameraPreview.getHolder().getSurface());
+        mediaRecorder.setPreviewDisplay(cameraPreview.getHolder().getSurface());
 
         // Step 6: Prepare configured MediaRecorder
         try {
             mediaRecorder.prepare();
         } catch (IllegalStateException e) {
             Log.d(TAG, "IllegalStateException preparing MediaRecorder: " + e.getMessage());
-            releaseMediaRecorder(camera);
+            releaseMediaRecorder();
             return false;
         } catch (IOException e) {
             Log.d(TAG, "IOException preparing MediaRecorder: " + e.getMessage());
-            releaseMediaRecorder(camera);
+            releaseMediaRecorder();
             return false;
         }
         return true;
@@ -107,20 +108,20 @@ public class VideoRecorder
     /**
      * Starts/Stops recording of video from the phones main camera
      */
-    public void toggleRecording(Camera camera)
+    public void toggleRecording(ShowCamera cameraPreview)
     {
         if (isRecording) {
             // stop recording and release camera
             mediaRecorder.stop();  // stop the recording
-            releaseMediaRecorder(camera); // release the MediaRecorder object
-            camera.lock();         // take camera access back from MediaRecorder
+            releaseMediaRecorder(); // release the MediaRecorder object
+            m_camera.lock();         // take camera access back from MediaRecorder
 
             // inform the user that recording has stopped
             isRecording = false;
         } else {
             // initialize video camera
             File encounterFolder = FileUtility.createEncounterFolder(FileUtility.GetEncounterHomeDir());
-            boolean videoStartedUpSuccessfully = prepareVideoRecorder(encounterFolder, camera);
+            boolean videoStartedUpSuccessfully = prepareVideoRecorder(encounterFolder, cameraPreview);
             if (videoStartedUpSuccessfully) {
                 // Camera is available and unlocked, MediaRecorder is prepared,
                 // now you can start recording
@@ -130,20 +131,26 @@ public class VideoRecorder
                 isRecording = true;
             } else {
                 // prepare didn't work, release the camera
-                releaseMediaRecorder(camera);
+                releaseMediaRecorder();
                 // inform user
                 Log.d(TAG, "failed to start Media Recorder");
             }
         }
     }
 
-    public void releaseMediaRecorder(Camera camera){
+    private void releaseMediaRecorder(){
         if (mediaRecorder != null) {
             mediaRecorder.reset();   // clear recorder configuration
             mediaRecorder.release(); // release the recorder object
             mediaRecorder = null;
-            camera.lock();           // lock camera for later use
+            m_camera.lock();           // lock camera for later use
         }
+    }
+
+    public void closeRecording()
+    {
+        releaseMediaRecorder();       // if you are using MediaRecorder, release it first
+        releaseCamera();              // release the camera immediately on pause event
     }
 
     /** Create a file Uri for saving an image or video */
@@ -172,7 +179,26 @@ public class VideoRecorder
         return mediaFile;
     }
 
-    
+    private void releaseCamera() {
+        if (m_camera != null) {
+            m_camera.release();        // release the camera for other applications
+
+            //camera = null; //TODO Do we need to set camera to null?
+        }
+    }
+
+    private static Camera getCameraInstance() {
+        Camera c = null;
+        try{
+            c = Camera.open();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            Log.d(TAG, "getCameraInstance: " + ex.getMessage());
+        }
+        return c;
+    }
 
     //endregion
 }

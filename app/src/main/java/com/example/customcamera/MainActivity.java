@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Region private members
      */
-    Camera camera;
+    //Camera camera;
 
     /**
      * The Layout frame that displays the camera's view
@@ -39,7 +39,10 @@ public class MainActivity extends AppCompatActivity {
      */
     private static final String TAG = "Main Activity";
 
-    private VideoRecorder videoRecorder;
+    private VideoRecorder videoRecorder = new VideoRecorder();
+
+    //TODO: Can we get this out?
+    Camera m_camera;
     //endregion
 
     //region Activity Lifecycle Methods
@@ -51,10 +54,10 @@ public class MainActivity extends AppCompatActivity {
         frameLayout = findViewById(R.id.frameLayout);
 
         //open and start camera
-        camera = getCameraInstance();
+        m_camera = getCameraInstance();
 
         //show camera view
-        cameraPreview = new ShowCamera(this,camera);
+        cameraPreview = new ShowCamera(this, m_camera);
 
         frameLayout.addView(cameraPreview);
 
@@ -84,8 +87,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        videoRecorder.releaseMediaRecorder(camera);       // if you are using MediaRecorder, release it first
-        releaseCamera();              // release the camera immediately on pause event
+        videoRecorder.closeRecording();
+        //videoRecorder.releaseMediaRecorder();       // if you are using MediaRecorder, release it first
+        //releaseCamera();              // release the camera immediately on pause event
     }
 
 
@@ -108,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void captureVideo(View v)
     {
-        videoRecorder.toggleRecording(getCameraInstance());
+        videoRecorder.toggleRecording(cameraPreview);
 
         if(videoRecorder.isRecording())
         {
@@ -143,10 +147,10 @@ public class MainActivity extends AppCompatActivity {
      */
     private void takePhoto()
     {
-        if(camera != null)
-        {
-            camera.takePicture(null, null, mPictureCallback);
-        }
+//        if(camera != null)
+//        {
+//            camera.takePicture(null, null, mPictureCallback);
+//        }
     }
 
     /**
@@ -173,6 +177,8 @@ public class MainActivity extends AppCompatActivity {
     //region Camera Methods
 
     //Opens the camera
+
+    //TODO: Remove from here or video recorder
     private static Camera getCameraInstance() {
         Camera c = null;
         try{
@@ -184,14 +190,6 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "getCameraInstance: " + ex.getMessage());
         }
         return c;
-    }
-
-    private void releaseCamera() {
-        if (camera != null) {
-            camera.release();        // release the camera for other applications
-
-            //camera = null; //TODO Do we need to set camera to null?
-        }
     }
 
 
