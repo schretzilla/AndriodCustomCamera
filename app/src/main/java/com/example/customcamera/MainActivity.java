@@ -13,10 +13,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
 
@@ -175,10 +172,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onPictureTaken(byte[] data, Camera camera)
         {
-            File newParentDir = createEncounterFolder(encounterHomeDir);
+            File newParentDir = FileUtility.createEncounterFolder(encounterHomeDir);
 
             // TODO: Handle all data but for now just write the bird photo
-            writeFile(data, newParentDir, "BirdPhoto.jpg");
+            FileUtility.writeFile(data, newParentDir, "BirdPhoto.jpg");
 
             //TODO: Remove when view is removed
             camera.startPreview();
@@ -249,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
             isRecording = false;
         } else {
             // initialize video camera
-            File encounterFolder = createEncounterFolder(encounterHomeDir);
+            File encounterFolder = FileUtility.createEncounterFolder(encounterHomeDir);
             boolean videoStartedUpSuccessfully = prepareVideoRecorder(encounterFolder);
             if (videoStartedUpSuccessfully) {
                 // Camera is available and unlocked, MediaRecorder is prepared,
@@ -284,9 +281,6 @@ public class MainActivity extends AppCompatActivity {
             //camera = null; //TODO Do we need to set camera to null?
         }
     }
-
-    //Methods for Saving video from Camera
-
 
     /** Create a file Uri for saving an image or video */
     //TODO: Figure out if we need this URI
@@ -331,55 +325,6 @@ public class MainActivity extends AppCompatActivity {
         return c;
     }
 
-    //
-
-    /**
-     * Write the supplied data to the directory to the file name
-     * <p>
-     *     Note: Not used for writing videos. MediaRecorder handles that.
-     * </p>
-     * @param data The byte array of data to write
-     * @param directory The parent directory to write this new data file in
-     * @param fileName The name to use when saving the data to a file.
-     */
-    private void writeFile(byte[] data, File directory, String fileName)
-    {
-
-        if(directory == null || fileName == null)
-        {
-            return;
-        }
-        else
-        {
-            try
-            {
-                //write data
-                File dataFile = new File(directory, fileName);
-                FileOutputStream fos = new FileOutputStream(dataFile);
-                fos.write(data);
-                fos.close();
-
-            } catch(IOException ex)
-            {
-                ex.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * Creates a new unique directory in the provided home directory using timestamps
-     * @param homeDir The parent directory to create this encounter in
-     * @return The newly created uniquely named directory using the timestamp as the unique identifier
-     */
-    private File createEncounterFolder(File homeDir)
-    {
-        String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HHmmss").format(new Date());
-
-        File encounterFolder = new File(homeDir.getPath() + File.separator + timeStamp);
-        encounterFolder.mkdir();
-
-        return encounterFolder;
-    }
 
     //endregion
 }
