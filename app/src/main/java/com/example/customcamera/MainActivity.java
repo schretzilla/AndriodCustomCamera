@@ -34,12 +34,9 @@ public class MainActivity extends AppCompatActivity {
     //bool for if video is recording
     private boolean isRecording = false;
 
-    //Home directory to store all files in
-    File birdWatchHomeDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            , "BirdWatch");
-
-    private static File birdWatchVideoDir = new File(Environment.getExternalStoragePublicDirectory(
-            Environment.DIRECTORY_DOWNLOADS), "BirdWatchVideo");
+    //Home directory for all Encounter Data
+    private static File encounterHomeDir = new File(Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_DOWNLOADS), "EncounterData");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,15 +53,9 @@ public class MainActivity extends AppCompatActivity {
 
         //TODO: check that storage is mounted if we use external storage
 
-        //create birdwatch home directory if it doesn't exist
-        if(!birdWatchHomeDir.exists())
-        {
-            birdWatchHomeDir.mkdir();
-        }
-
         // Create the birdwatch video directory if it does not exist
-        if (! birdWatchVideoDir.exists()){
-            if (! birdWatchVideoDir.mkdirs()){
+        if (! encounterHomeDir.exists()){
+            if (! encounterHomeDir.mkdirs()){
                 Log.d(TAG, "failed to create directory");
             }
         }
@@ -97,9 +88,10 @@ public class MainActivity extends AppCompatActivity {
         }
         else
         {
+            //TODO: Replace uuid, possibly reuse other code by passing type
             //create File with timestamp
             String dateString = DateFormat.getDateTimeInstance().format(new Date());
-            File newBirdDirectory = new File(birdWatchHomeDir, dateString + "-" + UUID.randomUUID().toString());
+            File newBirdDirectory = new File(encounterHomeDir, dateString + "-" + UUID.randomUUID().toString());
 
             newBirdDirectory.mkdir();
             return newBirdDirectory;
@@ -167,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
             isRecording = false;
         } else {
             // initialize video camera
-            File encounterFolder = createEncounterFolder(birdWatchVideoDir);
+            File encounterFolder = createEncounterFolder(encounterHomeDir);
             boolean videoStartedUpSuccessfully = prepareVideoRecorder(encounterFolder);
             if (videoStartedUpSuccessfully) {
                 // Camera is available and unlocked, MediaRecorder is prepared,
@@ -266,8 +258,9 @@ public class MainActivity extends AppCompatActivity {
     public static final int MEDIA_TYPE_VIDEO = 2;
 
     /** Create a file Uri for saving an image or video */
+    //TODO: Figure out if we need this URI
     private static Uri getOutputMediaFileUri(int type){
-        return Uri.fromFile(getOutputMediaFile(birdWatchVideoDir, type));
+        return Uri.fromFile(getOutputMediaFile(encounterHomeDir, type));
     }
 
     /** Create a File for saving an image or video */
