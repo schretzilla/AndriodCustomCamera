@@ -18,7 +18,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
@@ -40,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
     File birdWatchHomeDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             , "BirdWatch");
 
+    private static File birdWatchVideoDir = new File(Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_DOWNLOADS), "BirdWatchVideo");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,10 +55,19 @@ public class MainActivity extends AppCompatActivity {
         cameraPreview = new ShowCamera(this,camera);
         frameLayout.addView(cameraPreview);
 
+        //TODO: check that storage is mounted if we use external storage
+
         //create birdwatch home directory if it doesn't exist
         if(!birdWatchHomeDir.exists())
         {
             birdWatchHomeDir.mkdir();
+        }
+
+        // Create the birdwatch video directory if it does not exist
+        if (! birdWatchVideoDir.exists()){
+            if (! birdWatchVideoDir.mkdirs()){
+                Log.d(TAG, "failed to create directory");
+            }
         }
 
     }
@@ -157,7 +168,9 @@ public class MainActivity extends AppCompatActivity {
             isRecording = false;
         } else {
             // initialize video camera
-            if (prepareVideoRecorder()) {
+            File encounterFolder = createEncounterFolder(birdWatchVideoDir);
+            boolean videoStartedUpSuccessfully = prepareVideoRecorder(encounterFolder);
+            if (videoStartedUpSuccessfully) {
                 // Camera is available and unlocked, MediaRecorder is prepared,
                 // now you can start recording
                 mediaRecorder.start();
@@ -169,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
                 // prepare didn't work, release the camera
                 releaseMediaRecorder();
                 // inform user
+                Log.d(TAG, "failed to start Media Recorder");
             }
         }
     }
@@ -182,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
     MediaRecorder mediaRecorder;
 
     //Handles locking the camera, configuring and preparing the media recorder instance
-    private boolean prepareVideoRecorder(){
+    private boolean prepareVideoRecorder(File outputFolder){
 
         camera = getCameraInstance();
         mediaRecorder = new MediaRecorder();
@@ -199,8 +213,8 @@ public class MainActivity extends AppCompatActivity {
         mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
 
         // Step 4: Set output file
-        String outputfile = getOutputMediaFile(MEDIA_TYPE_VIDEO).toString();
-        mediaRecorder.setOutputFile(outputfile);
+        String outputFile = getOutputMediaFile(outputFolder, MEDIA_TYPE_VIDEO).toString();
+        mediaRecorder.setOutputFile(outputFile);
 
         // Step 5: Set the preview output
         mediaRecorder.setPreviewDisplay(cameraPreview.getHolder().getSurface());
@@ -254,40 +268,35 @@ public class MainActivity extends AppCompatActivity {
 
     /** Create a file Uri for saving an image or video */
     private static Uri getOutputMediaFileUri(int type){
-        return Uri.fromFile(getOutputMediaFile(type));
+        return Uri.fromFile(getOutputMediaFile(birdWatchVideoDir, type));
     }
 
     /** Create a File for saving an image or video */
-    private static File getOutputMediaFile(int type){
-        // To be safe, you should check that the SDCard is mounted
-        // using Environment.getExternalStorageState() before doing this.
-
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS), "CustomCamera");
-        // This location works best if you want the created images to be shared
-        // between applications and persist after your app has been uninstalled.
-
-        // Create the storage directory if it does not exist
-        if (! mediaStorageDir.exists()){
-            if (! mediaStorageDir.mkdirs()){
-                Log.d("MyCameraApp", "failed to create directory");
-                return null;
-            }
-        }
-
+    private static File getOutputMediaFile(File parentFolder, int type)
+    {
         // Create a media file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         File mediaFile;
         if (type == MEDIA_TYPE_IMAGE){
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "IMG_"+ timeStamp + ".jpg");
+            mediaFile = new File(parentFolder + File.separator +
+                    "FeedingPhoto" + ".jpg");
         } else if(type == MEDIA_TYPE_VIDEO) {
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "VID_"+ timeStamp + ".mp4");
+            mediaFile = new File(parentFolder + File.separator +
+                    "FeedingVideo" + ".mp4");
         } else {
             return null;
         }
 
         return mediaFile;
+    }
+
+    // Creates a new unique directory using timestamps and UUID's to store bird data in
+    private File createEncounterFolder(File homeDir)
+    {
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HHmmss").format(new Date());
+
+        File encounterFolder = new File(homeDir.getPath() + File.separator + timeStamp);
+        encounterFolder.mkdir();
+
+        return encounterFolder;
     }
 }
