@@ -22,29 +22,45 @@ import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
 
 public class MainActivity extends AppCompatActivity {
 
-    //region private members
+    /**
+     * Region private members
+     */
     Camera camera;
 
-    //The Layout frame that displays the camera's view
+    /**
+     * The Layout frame that displays the camera's view
+     */
     FrameLayout frameLayout;
 
-    //The Camera Preview
+    /**
+     * The Camera Preview
+     */
     ShowCamera cameraPreview;
 
-    //Log tag name
+    /**
+     * Log tag name
+     */
     private static final String TAG = "Main Activity";
 
-    //bool for if video is recording
+    /**
+     * bool for if video is recording
+     */
     private boolean isRecording = false;
 
-    //Home directory for all Encounter Data
+    /**
+     * Home directory for all Encounter Data
+     */
     private static File encounterHomeDir = new File(Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_DOWNLOADS), "EncounterData");
 
-    //Image Media type
+    /**
+     * Image Media type
+     */
     private static final int MEDIA_TYPE_IMAGE = 1;
 
-    //Video media type
+    /**
+     * Video media type
+     */
     private static final int MEDIA_TYPE_VIDEO = 2;
 
     /**
@@ -61,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        frameLayout = (FrameLayout) findViewById(R.id.frameLayout);
+        frameLayout = findViewById(R.id.frameLayout);
 
         //open and start camera
         camera = getCameraInstance();
@@ -78,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
 //            return null;
 //        }
 
-        // Create the birdwatch video directory if it does not exist
+        // Create the parent data directory if it does not exist
         if (! encounterHomeDir.exists()){
             if (! encounterHomeDir.mkdirs()){
                 Log.d(TAG, "failed to create directory: " + encounterHomeDir.getName());
@@ -129,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
     //region photo specific events
 
     /**
-     * Trigger the global camera to take a photo
+     * Trigger the global camera obj to take a photo
      */
     private void takePhoto()
     {
