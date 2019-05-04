@@ -19,10 +19,8 @@ import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
 
 public class MainActivity extends AppCompatActivity {
 
-    /**
-     * Region private members
-     */
-    //Camera camera;
+    //Region private members
+
 
     /**
      * The Layout frame that displays the camera's view
@@ -109,10 +107,10 @@ public class MainActivity extends AppCompatActivity {
      * Event for handling camera photo button pushes
      * @param v The current view that calls this method
      */
-    public void captureImage(View v)
-    {
-        takePhoto();
-    }
+//    public void captureImage(View v)
+//    {
+//        takePhoto();
+//    }
 
     /**
      * Event for handling capturing video button pushes
@@ -150,41 +148,39 @@ public class MainActivity extends AppCompatActivity {
 
     //region photo specific events
 
-    /**
-     * Trigger the global camera obj to take a photo
-     */
-    private void takePhoto()
-    {
-//        if(camera != null)
+//    /**
+//     * Trigger the global camera obj to take a photo
+//     */
+//    private void takePhoto()
+//    {
+//        if(m_camera != null)
 //        {
-//            camera.takePicture(null, null, mPictureCallback);
+//            m_camera.takePicture(null, null, mPictureCallback);
 //        }
-    }
+//    }
 
-    /**
-     * Camera Callbacks for when a photo is taken
-     */
-    Camera.PictureCallback mPictureCallback = new Camera.PictureCallback() {
-        @Override
-        public void onPictureTaken(byte[] data, Camera camera)
-        {
-            File newParentDir = FileUtility.createEncounterFolder(FileUtility.GetEncounterHomeDir());
-
-            // TODO: Handle all data but for now just write the bird photo
-            FileUtility.writeFile(data, newParentDir, "BirdPhoto.jpg");
-
-            //TODO: Remove when view is removed
-            camera.startPreview();
-
-        }
-    };
+//    /**
+//     * Camera Callbacks for when a photo is taken
+//     */
+//    Camera.PictureCallback mPictureCallback = new Camera.PictureCallback() {
+//        @Override
+//        public void onPictureTaken(byte[] data, Camera camera)
+//        {
+//            File newParentDir = FileUtility.createEncounterFolder(FileUtility.GetEncounterHomeDir());
+//
+//            // TODO: Handle all data but for now just write the bird photo
+//            FileUtility.writeFile(data, newParentDir, "BirdPhoto.jpg");
+//
+//            //TODO: Remove when view is removed
+//            camera.startPreview();
+//
+//        }
+//    };
 
     //endregion
 
 
     //region Camera Methods
-
-    //Opens the camera
 
     //TODO: Remove from here or video recorder
     private static Camera getCameraInstance() {

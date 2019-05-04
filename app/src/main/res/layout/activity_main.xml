@@ -10,29 +10,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/captureBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginBottom="24dp"
-            android:onClick="captureImage"
-            android:text="@string/captureBtnTxt"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="44dp"
             android:text="@string/custom_camera"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textSize="50sp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.238"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -40,12 +28,15 @@
             android:id="@+id/recordVideo"
             android:layout_width="159dp"
             android:layout_height="52dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="144dp"
+            android:layout_marginBottom="16dp"
             android:onClick="captureVideo"
             android:text="@string/record_video"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <FrameLayout
             android:id="@+id/frameLayout"
@@ -58,7 +49,8 @@
             app:layout_constraintBottom_toTopOf="@+id/recordVideo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/title">
+            app:layout_constraintTop_toBottomOf="@+id/title"
+            app:layout_constraintVertical_bias="0.984">
 
         </FrameLayout>
 

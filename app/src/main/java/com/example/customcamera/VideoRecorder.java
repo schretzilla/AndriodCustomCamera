@@ -70,14 +70,23 @@ public class VideoRecorder
     public void toggleRecording()
     {
         if (isRecording) {
-            // stop recording and release camera
-            mediaRecorder.stop();  // stop the recording
-            releaseMediaRecorder(); // release the MediaRecorder object
-            m_camera.lock();         // take camera access back from MediaRecorder
-
-            // inform the user that recording has stopped
-            isRecording = false;
+            stopRecording();
         } else {
+            startRecording();
+        }
+    }
+
+    /**
+     * Starts recording if recording is not already happening
+     */
+    public void startRecording()
+    {
+        if(isRecording)
+        {
+           Log.d(TAG, "Already recording video, can't start recording.");
+        }
+        else
+        {
             // initialize video camera
             File encounterFolder = FileUtility.createEncounterFolder(FileUtility.GetEncounterHomeDir());
             boolean videoStartedUpSuccessfully = prepareVideoRecorder(encounterFolder);
@@ -94,6 +103,21 @@ public class VideoRecorder
                 // inform user
                 Log.d(TAG, "failed to start Media Recorder");
             }
+        }
+    }
+
+    /**
+     * Stops recording and cleans up and resources used for it
+     */
+    public void stopRecording()
+    {
+        if(isRecording) {
+            // stop recording and release camera
+            mediaRecorder.stop();  // stop the recording
+            releaseMediaRecorder(); // release the MediaRecorder object
+            m_camera.lock();         // take camera access back from MediaRecorder
+
+            isRecording = false;
         }
     }
 
