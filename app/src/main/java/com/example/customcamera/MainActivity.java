@@ -125,34 +125,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void captureVideo(View v)
     {
-        if (isRecording) {
-            // stop recording and release camera
-            mediaRecorder.stop();  // stop the recording
-            releaseMediaRecorder(); // release the MediaRecorder object
-            camera.lock();         // take camera access back from MediaRecorder
-
-            // inform the user that recording has stopped
-            setCaptureButtonText("Record Video");
-            isRecording = false;
-        } else {
-            // initialize video camera
-            File encounterFolder = createEncounterFolder(encounterHomeDir);
-            boolean videoStartedUpSuccessfully = prepareVideoRecorder(encounterFolder);
-            if (videoStartedUpSuccessfully) {
-                // Camera is available and unlocked, MediaRecorder is prepared,
-                // now you can start recording
-                mediaRecorder.start();
-
-                // inform the user that recording has started
-                setCaptureButtonText("Stop");
-                isRecording = true;
-            } else {
-                // prepare didn't work, release the camera
-                releaseMediaRecorder();
-                // inform user
-                Log.d(TAG, "failed to start Media Recorder");
-            }
-        }
+        toggleRecording();
     }
 
     //endregion
@@ -214,6 +187,41 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Starts/Stops recording of video from the phones main camera
+     */
+    private void toggleRecording()
+    {
+        if (isRecording) {
+            // stop recording and release camera
+            mediaRecorder.stop();  // stop the recording
+            releaseMediaRecorder(); // release the MediaRecorder object
+            camera.lock();         // take camera access back from MediaRecorder
+
+            // inform the user that recording has stopped
+            setCaptureButtonText("Record Video");
+            isRecording = false;
+        } else {
+            // initialize video camera
+            File encounterFolder = createEncounterFolder(encounterHomeDir);
+            boolean videoStartedUpSuccessfully = prepareVideoRecorder(encounterFolder);
+            if (videoStartedUpSuccessfully) {
+                // Camera is available and unlocked, MediaRecorder is prepared,
+                // now you can start recording
+                mediaRecorder.start();
+
+                // inform the user that recording has started
+                setCaptureButtonText("Stop");
+                isRecording = true;
+            } else {
+                // prepare didn't work, release the camera
+                releaseMediaRecorder();
+                // inform user
+                Log.d(TAG, "failed to start Media Recorder");
+            }
+        }
     }
 
     @Override
