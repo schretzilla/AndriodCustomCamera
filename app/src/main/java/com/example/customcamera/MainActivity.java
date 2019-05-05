@@ -172,8 +172,8 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Callback when permissions have been accepted or denied
      * @param requestCode The request code for the permissions that was requested
-     * @param permissions
-     * @param grantResults
+     * @param permissions The permissions they were asked
+     * @param grantResults The list of results from permissions they were asked about
      */
     @Override
     public void onRequestPermissionsResult(int requestCode,
