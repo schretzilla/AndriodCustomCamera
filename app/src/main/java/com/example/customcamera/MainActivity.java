@@ -106,69 +106,6 @@ public class MainActivity extends AppCompatActivity {
         //releaseCamera();              // release the camera immediately on pause event
     }
 
-
-    //endregion
-
-    //region Events
-
-    /**
-     * Event for handling camera photo button pushes
-     * @param v The current view that calls this method
-     */
-//    public void captureImage(View v)
-//    {
-//        takePhoto();
-//    }
-
-    /**
-     * Event for handling capturing video button pushes
-     * @param v The current view
-     */
-    public void captureVideo(View v)
-    {
-        videoRecorder.toggleRecording();
-
-        if(videoRecorder.isRecording())
-        {
-            setCaptureButtonText("Stop");
-        }
-        else
-        {
-            setCaptureButtonText("Record Video");
-        }
-    }
-
-    //endregion
-
-    //region private methods
-
-    /**
-     * Request permissions to required hardware
-     */
-    private void requestPermissions()
-    {
-        HashMap<String, Integer> reqMap = new HashMap<>();
-        reqMap.put(Manifest.permission.CAMERA, 1);
-        reqMap.put(Manifest.permission.RECORD_AUDIO, 2);
-        reqMap.put(Manifest.permission.WRITE_EXTERNAL_STORAGE, 3);
-
-        for (String requirement : reqMap.keySet())
-        {
-            if (ContextCompat.checkSelfPermission(this,
-                    requirement) != PackageManager.PERMISSION_GRANTED) {
-
-                // No explanation needed; request the permission
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{requirement},
-                        reqMap.get(requirement));
-
-
-            }
-
-        }
-
-    }
-
     /**
      * Callback when permissions have been accepted or denied
      * @param requestCode The request code for the permissions that was requested
@@ -221,8 +158,67 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "Permission: " + requestName + " denied!", Toast.LENGTH_SHORT).show();
 
         }
-
     }
+    //endregion
+
+    //region Events
+
+    /**
+     * Event for handling camera photo button pushes
+     * @param v The current view that calls this method
+     */
+//    public void captureImage(View v)
+//    {
+//        takePhoto();
+//    }
+
+    /**
+     * Event for handling capturing video button pushes
+     * @param v The current view
+     */
+    public void captureVideo(View v)
+    {
+        videoRecorder.toggleRecording();
+
+        if(videoRecorder.isRecording())
+        {
+            setCaptureButtonText("Stop");
+        }
+        else
+        {
+            setCaptureButtonText("Record Video");
+        }
+    }
+
+    //endregion
+
+    //region private methods
+
+    /**
+     * Request permissions to required hardware
+     */
+    private void requestPermissions()
+    {
+        //Map of permissions to request
+        HashMap<String, Integer> reqMap = new HashMap<>();
+        reqMap.put(Manifest.permission.CAMERA, 1);
+        reqMap.put(Manifest.permission.RECORD_AUDIO, 2);
+        reqMap.put(Manifest.permission.WRITE_EXTERNAL_STORAGE, 3);
+
+        for (String requirement : reqMap.keySet())
+        {
+            if (ContextCompat.checkSelfPermission(this,
+                    requirement) != PackageManager.PERMISSION_GRANTED) {
+
+                // No explanation needed; request the permission
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{requirement},
+                        reqMap.get(requirement));
+            }
+        }
+    }
+
+
 
 
     //endregion
